@@ -1,0 +1,90 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <Windows.h>    
+
+
+using namespace std;
+
+// Функція для заповнення масиву випадковими числами від -10 до 10
+void fillArray(int** arr, int rows, int cols) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            arr[i][j] = rand() % 21 - 10; // Генерує випадкове число від -10 до 10
+        }
+    }
+}
+
+// Функція для виведення масиву на екран
+void printArray(int** arr, int rows, int cols) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            cout << arr[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+// Функція для обчислення середнього геометричного значення рядка
+double geometricMean(int* row, int cols) {
+    double product = 1.0;
+    for (int i = 0; i < cols; ++i) {
+        if (row[i] != 0) {
+            product *= row[i];
+        }
+    }
+    return pow(fabs(product), 1.0 / cols);
+}
+
+// Функція для порівняння елементів при сортуванні Шелла
+int compare(const void* a, const void* b) {
+    double diff = *(const double*)b - *(const double*)a;
+    if (diff > 0) return 1;
+    if (diff < 0) return -1;
+    return 0;
+}
+
+int main() {
+    srand(time(nullptr)); // Ініціалізуємо генератор випадкових чисел
+
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
+
+    const int rows = 10;
+    const int cols = 7;
+
+    // Створення динамічного двовимірного масиву
+    int** array = new int* [rows];
+    for (int i = 0; i < rows; ++i) {
+        array[i] = new int[cols];
+    }
+
+    fillArray(array, rows, cols); // Заповнюємо масив випадковими числами
+    cout << "Масив В (10х7):" << endl;
+    printArray(array, rows, cols); // Виводимо початковий масив на екран
+
+    // Обчислюємо середнє геометричне для кожного рядка
+    double* geometricMeans = new double[rows];
+    for (int i = 0; i < rows; ++i) {
+        geometricMeans[i] = geometricMean(array[i], cols);
+    }
+
+    // Сортування середніх геометричних методом Шелла
+    qsort(geometricMeans, rows, sizeof(double), compare);
+
+    // Вивід відсортованих середніх геометричних
+    cout << "\nСортовані середні значення рядків: " << endl << endl;
+    for (int i = 0; i < rows; ++i) {
+        cout << "Рядок " << i+1 << ": " << geometricMeans[i] << endl;
+    }
+
+    // Звільняємо виділену пам'ять
+    delete[] geometricMeans;
+    for (int i = 0; i < rows; ++i) {
+        delete[] array[i];
+    }
+    delete[] array;
+
+    return 0;
+}
